@@ -1,0 +1,93 @@
+#popup-yes,
+#popup-no,
+#popup-ok {
+    padding: 10px 10px;
+    font-size: 16px;
+    cursor: pointer;
+    color: white;
+    border: none;
+    border-radius: 10px;
+}
+
+#popup-yes {
+    padding: 10px 22px;
+    border: 5px solid #fff;
+    border-radius: 15px;
+}
+
+#popup-no {
+    padding: 10px 10px;
+    border: 5px solid #fff;
+    border-radius: 15px;
+}
+
+#popup-ok {
+    padding: 8px 30px;
+    border: 10px solid #fff;
+    border-radius: 15px;
+}
+
+/* Estilo do pop-up */
+.popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 2px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    border-radius: 8px;
+    width: 300px;
+    text-align: center;
+}
+
+#phoneNumber {
+    display: none;
+    border-radius: 20px;
+    padding: 7px;
+    border: 10px solid #fff;
+}
+
+/* Estilo do fundo escuro ao redor do pop-up */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+/* Estilos adicionais para melhorar a aparência */
+#popup-obs,
+#popup-msg {
+    margin: 0 0 20px;
+    font-size: 20px;
+    color: black;
+}
+
+#popup-alert {
+    color: red;
+}
+
+.popup__tabs {
+    display: flex;
+    justify-content: space-evenly;
+    margin-bottom: var(--mb-0-5);
+  }
+
+#popup-yes,
+#popup-ok {
+    background: #3aac3e;
+    font-size: 20px;
+}
+
+#popup-no {
+    background: rgb(172, 0, 0);
+    font-size: 20px;
+}
