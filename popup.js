@@ -6,16 +6,19 @@ function showPopUp({ alert, msg, obs, ok, yes, no, input }, functionCallback) {
     yes = yes ? yes : '';
     no = no ? no : '';
     input = input ? input : false;
-
     // default:
     document.getElementById('popup-ok').style.display = 'none';
     document.getElementById('popup-yes').style.display = 'none';
     document.getElementById('popup-no').style.display = 'none';
-    document.getElementById('popup-input').style.display = 'none';
-    document.getElementById('phoneNumber').style.display = 'none';
+    document.getElementById('input-text-popup').style.display = 'none';
+    document.getElementById('input-phone-popup').style.display = 'none';
+    document.getElementById('input-password-popup').style.display = 'none';
     // Exibe o pop-up e o overlay
     document.getElementById('popup-div').style.display = 'block';
     document.getElementById('overlay').style.display = 'block';
+    /////////////////////////////////////////////////////////////////
+    document.getElementById('overlay').addEventListener('click', hidePopup);
+    document.body.classList.add('popup-open');
     /////////////////////////////////////////////////////////////////
     document.getElementById('popup-alert').textContent = alert;
     document.getElementById('popup-msg').textContent = msg;
@@ -23,6 +26,7 @@ function showPopUp({ alert, msg, obs, ok, yes, no, input }, functionCallback) {
     document.getElementById('popup-ok').textContent = ok;
     document.getElementById('popup-yes').textContent = yes;
     document.getElementById('popup-no').textContent = no;
+
 
     if (!yes && !no && ok) {
         isPopupOk();
@@ -40,55 +44,77 @@ function showPopUp({ alert, msg, obs, ok, yes, no, input }, functionCallback) {
         document.getElementById('popup-ok').style.display = 'block';
         document.getElementById('popup-yes').style.display = 'none';
         document.getElementById('popup-no').style.display = 'none';
-        document.getElementById('popup-input').style.display = 'none';
-        document.getElementById('phoneNumber').style.display = 'none';
+        document.getElementById('input-text-popup').style.display = 'none';
+        document.getElementById('input-phone-popup').style.display = 'none';
+        document.getElementById('input-password-popup').style.display = 'none';
     }
     function isPopupYesNo() {
-        console.log('AAAAAAAAAAAAAAAAAAAAAA');
-        console.log(input === false);
         document.getElementById('popup-yes').style.display = 'block';
         document.getElementById('popup-no').style.display = 'block';
         document.getElementById('popup-ok').style.display = 'none';
-        document.getElementById('popup-input').style.display = 'none';
-        document.getElementById('phoneNumber').style.display = 'none';
+        document.getElementById('input-text-popup').style.display = 'none';
+        document.getElementById('input-phone-popup').style.display = 'none';
+        document.getElementById('input-password-popup').style.display = 'none';
     }
 
     function isInput() {
         document.getElementById('popup-yes').style.display = 'block';
         document.getElementById('popup-no').style.display = 'block';
         document.getElementById('popup-ok').style.display = 'none';
-        console.log('INPUT ==>> TRUE');
-        console.log(input);
-        if (input?.text === true && input?.tel === false) {
+        if (input?.text === true && input?.tel === false && input?.password === false) {
             isInputText()
-        } else if (input?.text === false && input?.tel === true) {
+        } else if (input?.text === false && input?.tel === true && input?.password === false) {
             isInputTel();
+        } else if (input?.text === false && input?.tel === false && input?.password === true) {
+            isInputPassword();
         }
 
         function isInputText() {
-            console.log('TEXT 111111111');
-            document.getElementById('popup-input').style.display = 'block';
-            document.getElementById('popup-input').focus();
-            document.getElementById('phoneNumber').style.display = 'none';
+            document.getElementById('input-text-popup').style.display = 'block';
+            document.getElementById('input-text-popup').focus();
+            document.getElementById('input-phone-popup').style.display = 'none';
+            document.getElementById('input-password-popup').style.display = 'none';
         }
         function isInputTel() {
-            console.log('TEL 222222222');
-            document.getElementById('phoneNumber').style.display = 'block';
-            document.getElementById('phoneNumber').focus();
-            document.getElementById('popup-input').style.display = 'none';
+            document.getElementById('input-phone-popup').style.display = 'block';
+            document.getElementById('input-phone-popup').focus();
+            document.getElementById('input-text-popup').style.display = 'none';
+            document.getElementById('input-password-popup').style.display = 'none';
+        }
+        function isInputPassword() {
+            document.getElementById('input-password-popup').style.display = 'block';
+            document.getElementById('input-password-popup').focus();
+            document.getElementById('input-text-popup').style.display = 'none';
+            document.getElementById('input-phone-popup').style.display = 'none';
         }
     }
 
 
     document.getElementById('popup-yes').addEventListener('click', async (e) => {
-        if (functionCallback?.yesFunction)
-            functionCallback.yesFunction();
-        hidePopup();
+        try {
+            if (functionCallback?.yesFunction) {
+                await functionCallback.yesFunction();
+                hidePopup();
+            }
+        } catch (error) {
+            console.log(error.message)
+            if (error.message.includes('checked:')) {
+                notificacaoPopup(error.message.replace('checked:', ''), true);
+            }
+        }
     });
     document.getElementById('popup-no').addEventListener('click', async (e) => {
-        if (functionCallback?.noFunction)
-            functionCallback.noFunction();
-        hidePopup();
+        try {
+            if (functionCallback?.noFunction) {
+                await functionCallback.noFunction();
+                hidePopup();
+            } else {
+                hidePopup();
+            }
+        } catch (error) {
+            if (error.message.includes('checked:'))
+                notificacaoPopup(error.message.replace('checked:', ''), true);
+        }
         /*
                 if (!functionCallback?.redirect)
                     e.preventDefault();
@@ -97,9 +123,17 @@ function showPopUp({ alert, msg, obs, ok, yes, no, input }, functionCallback) {
         */
     });
     document.getElementById('popup-ok').addEventListener('click', async (e) => {
-        if (functionCallback?.okFunction)
-            functionCallback.okFunction();
-        hidePopup();
+        try {
+            if (functionCallback?.okFunction) {
+                await functionCallback.okFunction();
+                hidePopup();
+            } else {
+                hidePopup();
+            }
+        } catch (error) {
+            if (error.message.includes('checked:'))
+                notificacaoPopup(error.message.replace('checked:', ''), true);
+        }
         /*
                 if (!functionCallback?.redirect)
                     e.preventDefault();
@@ -109,14 +143,32 @@ function showPopUp({ alert, msg, obs, ok, yes, no, input }, functionCallback) {
     });
 
     function hidePopup() {
+        document.body.classList.remove('popup-open');
         document.getElementById('popup-div').style.display = 'none';
         document.getElementById('overlay').style.display = 'none';
+        /////////////// INPUT //////////////
+        document.getElementById('popup-yes').value = '';
+        document.getElementById('popup-no').value = '';
+        document.getElementById('popup-ok').value = '';
+        document.getElementById('input-text-popup').value = '';
+        document.getElementById('input-phone-popup').value = '';
+        document.getElementById('input-password-popup').value = '';
     }
 }
 
 
+/*
 function exibirNotificacao(mensagem, failed) {
-    const notification = document.getElementById('notification');
+    const divNotification = document.getElementById('notification');
+    notification(mensagem, failed, divNotification)
+}
+
+function notificationPopUp(mensagem, failed) {
+    const divNotification = document.getElementById('notification-popup');
+    notification(mensagem, failed, divNotification)
+}
+
+function exibirNotificacao(mensagem, failed, divNotification) {
     notification.textContent = mensagem;
     notification.style.display = 'block';
     if (failed)
@@ -127,21 +179,30 @@ function exibirNotificacao(mensagem, failed) {
         notification.style.display = 'none';
     }, 3000);
 }
+*/
 
-
-const configPopUpFull = {
-    alert: null,
-    msg: 'O Chatbot deve enviar o pedido para qual Whatsapp?',
-    obs: null,
-    ok: '',
-    yes: 'Enviar',
-    no: 'Cancelar',
-    input: { tel: true, text: false } || null,
+function exibirNotificacao(mensagem, failed) {
+    const notification = document.getElementById('notification');
+    notification.textContent = mensagem || 'ERRO';
+    notification.style.display = 'block';
+    if (failed)
+        notification.style.backgroundColor = 'red';
+    if (!failed)
+        notification.style.backgroundColor = 'green';
+    setTimeout(() => {
+        notification.style.display = 'none';
+    }, 3000);
 }
 
-const configPopUpOnlyOk = {
-    alert: 'ERRO!',
-    msg: 'ERRO DESCONHECIDO!',
-    obs: null,
-    ok: `Ok`,
-};
+function notificacaoPopup(mensagem, failed) {
+    const notification = document.getElementById('notification-popup');
+    notification.textContent = mensagem || 'ERRO';
+    notification.style.display = 'block';
+    if (failed)
+        notification.style.backgroundColor = 'red';
+    if (!failed)
+        notification.style.backgroundColor = 'green';
+    setTimeout(() => {
+        notification.style.display = 'none';
+    }, 3000);
+}
